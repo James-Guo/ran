@@ -1,0 +1,3 @@
+./dict4 4 tests/dataset_1.csv output.out < tests/test1.in > output.stdout.out
+
+./dict4 4 tests/dataset_100.csv output.out < tests/test100.in > output.stdout.out
