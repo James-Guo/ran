@@ -273,20 +273,9 @@ int treeInsert(ptc_tree_t *tree, const char *key, void *data, comparisons_t *cmp
     ptc_node_t *parent = NULL;
     ptc_node_t *current = tree->root;
 
-    
+    printf("Trying to insert: %s\n", key);
+    printf("current == NULL evaluates to: %d\n", current == NULL);
 
-    // Find the appropriate parent node
-    while (current != NULL && current->bitIndex < cmps->bit_cmps) {
-        parent = current;
-        cmps->node_access++;
-        if (strcmp(key, current->key) < 0) {
-            cmps->str_cmps++;
-            current = current->left;
-        } else {
-            cmps->str_cmps++;
-            current = current->right;
-        }
-    }
 
     // Create the new node
     ptc_node_t *newNode = (ptc_node_t *)malloc(sizeof(ptc_node_t));
@@ -306,16 +295,61 @@ int treeInsert(ptc_tree_t *tree, const char *key, void *data, comparisons_t *cmp
     newNode->data = data;
     newNode->bitIndex = cmps->bit_cmps;  // Set the bitIndex
 
+
+    if (current == NULL) {
+        // If tree is empty, insert as root
+        printf("EMPTY TREE\n");
+        printf("Adding as root: %s\n", key);
+        tree->root = newNode;
+        return 0;
+    }
+
+
+
+    printf("current != NULL evaluates to: %d\n", current != NULL);
+    printf("current->bitIndex < cmps->bit_cmps evaluates to: %d\n", current->bitIndex < cmps->bit_cmps);
+
+
+
+    
+
+    // Find the appropriate parent node
+    while (current != NULL) {
+        parent = current;
+        printf("THIS IS CURRENTLY PARENT: %s\n", parent->key);
+        cmps->node_access++;
+        if (strcmp(key, current->key) < 0) {
+            cmps->str_cmps++;
+            current = current->left;
+        } else {
+            cmps->str_cmps++;
+            current = current->right;
+        }
+    }
+
+    // printf("\t*************************************\n");
+    // printf("\t*************************************\n");
+    // printf("\t*************************************\n");
+    // printf("\t*************************************\n");
+    // printf("\t*************************************\n");
+    // printf("\t*************************************\n");
+    printf("\t Parent key: %s\n", parent->key);
+
+
+
     if (parent == NULL) {
         // If tree is empty, insert as root
+        printf("Adding as root: %s\n", key);
         tree->root = newNode;
     } else {
         int bitIndex = parent->bitIndex + 1;
         newNode->bitIndex = bitIndex;
 
         if (strcmp(key, parent->key) < 0) {
+            printf("Add to the left: %s\n", key);
             parent->left = newNode;
         } else {
+            printf("Add to the right: %s\n", key);
             parent->right = newNode;
         }
     }
