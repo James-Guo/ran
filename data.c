@@ -273,6 +273,8 @@ int treeInsert(ptc_tree_t *tree, const char *key, void *data, comparisons_t *cmp
     ptc_node_t *parent = NULL;
     ptc_node_t *current = tree->root;
 
+    
+
     // Find the appropriate parent node
     while (current != NULL && current->bitIndex < cmps->bit_cmps) {
         parent = current;
@@ -328,6 +330,7 @@ int treeSearch(ptc_tree_t *tree, char *query, comparisons_t *comparisons, match_
         return;
     }
 
+
     // Initialize comparisons structure
     if (cmps) {
         cmps->bit_cmps = 0;
@@ -338,11 +341,15 @@ int treeSearch(ptc_tree_t *tree, char *query, comparisons_t *comparisons, match_
     // Start the recursive search
     treeSearchRecursive(tree->root, (char *)key, cmps, matches);*/
 
+
+
     // Initialize search
     *matches = NULL;
     comparisons->bit_cmps = 0;
     comparisons->node_access = 0;
     comparisons->str_cmps = 0;
+
+    printf("STARTING SEARCH FOR: %s\n", query);
 
     ptc_node_t *current = tree->root;
     int found = 0;
@@ -355,12 +362,12 @@ int treeSearch(ptc_tree_t *tree, char *query, comparisons_t *comparisons, match_
         comparisons->node_access++;
 
         // Compare the query with the current node's key
-        int cmp = patriciaCompare(query, current->key);
+        int cmp = patriciaCompare(query, current->key, comparisons);
         comparisons->bit_cmps += abs(cmp);
         comparisons->str_cmps++;
 
         // Debug output
-        printf("Comparing '%s' with '%s': cmp=%d\n", query, current->key, cmp);
+        printf("\tComparing '%s' with '%s': cmp=%d\n", query, current->key, cmp);
 
         if (cmp == 0) {
             // Exact match found
@@ -745,8 +752,40 @@ int min(int a, int b, int c) {
     }
 }
 
-int patriciaCompare(const char *str1, const char *str2) {
-    return strcmp(str1, str2);
+int patriciaCompare(const char *query, const char *key, comparisons_t *comparisons) {
+    int i = 0;
+    int bit_comparisons = 0;
+
+    // Initialize comparisons
+    if (comparisons != NULL) {
+        comparisons->bit_cmps = 0;
+        comparisons->node_access = 0;
+        comparisons->str_cmps = 0;
+    }
+
+    // If one string is a prefix of the other, count remaining bits
+    while (query[i] != '\0') {
+        for (int bit = 7; bit >= 0; --bit) {
+            bit_comparisons++;
+        }
+        i++;
+    }
+
+    while (key[i] != '\0') {
+        for (int bit = 7; bit >= 0; --bit) {
+            bit_comparisons++;
+        }
+        i++;
+    }
+
+    // Update comparison counters
+    if (comparisons != NULL) {
+        comparisons->bit_cmps += bit_comparisons;
+        comparisons->node_access++;
+    }
+
+    // Return the number of bits compared
+    return bit_comparisons;
 }
 
 /* Returns the edit distance of two strings

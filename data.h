@@ -155,7 +155,7 @@ int calculateBitComparisons(char *key1, char *key2);
 // Function to trim whitespace from a string
 char *trimWhitespace(char *str);
 
-int patriciaCompare(const char *str1, const char *str2);
+int patriciaCompare(const char *query, const char *key, comparisons_t *comparisons);
 
 #endif
 

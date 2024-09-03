@@ -15,6 +15,15 @@ void processQueries(ptc_tree_t *tree, FILE *inputfile, FILE *outputfile);
 int editDistance(char *str1, char *str2, int n, int m);
 int min(int a, int b, int c);
 
+void inorderTraversal(ptc_node_t* root) {
+    if (root == NULL) {
+        return;
+    }
+
+    inorderTraversal(root->left);        // Visit left subtree
+    printf("%s\n", root->key);           // Visit current node
+    inorderTraversal(root->right);       // Visit right subtree
+}
 
 int main(int argc, char *argv[]) {
 
@@ -26,6 +35,12 @@ int main(int argc, char *argv[]) {
 
     // read record from inputfile 
     readRecordtoTree(argv[2], tree);
+
+    printf("*************************************\n");
+    printf("In Order Traversal\n");
+    inorderTraversal(tree->root);
+    printf("*************************************\n");
+    exit(0);
 
     // create and write output file
     FILE *outputfile = fopen(argv[3], "w");
@@ -69,13 +84,17 @@ void readRecordtoTree(char *filename, ptc_tree_t *tree) {
 
     // read and insert records to tree
     char line[MAX_FIELD_LEN + 1];
+    // printf("Inside readRecordtoTree\n");
     while (fgets(line, sizeof(line), inputfile) != NULL) {
+        printf("Processing line: %s\n", line);
 
-        // printf("%s", line);
         
         // process every line to extract data for tree insertion
         record_t *record = recordParse(line);
         comparisons_t cmps = {0, 0, 0};
+        // printf("\tBEFORE TREEINSERT\n");
+        // printf("\t LINE: %s\n", line);
+        // printf("\t SuburbName: %s\n", record->nameSuburb);
         treeInsert(tree, record->nameSuburb, record, &cmps);
     }
 
@@ -89,6 +108,8 @@ void processQueries(ptc_tree_t *tree, FILE *inputfile, FILE *outputfile) {
     //match_list_t *matches = NULL;
     //closest_match_t closest;
 
+    printf("PROCESSQUERIES\n");
+
     while (fgets(query, sizeof(query), inputfile) != NULL) {
 
         // Remove newline character
@@ -101,16 +122,23 @@ void processQueries(ptc_tree_t *tree, FILE *inputfile, FILE *outputfile) {
         queryComparisons.str_cmps = 0;
 
         fprintf(outputfile, "%s -->\n", query);
-        // printf("%s -->\n", query);
+
+        // printf("********************\n");
+        // printf("QUERY %s\n", query);
+        // printf("********************\n");
 
         // Perform search
         match_list_t *matches = NULL;
         int exactfound = treeSearch(tree, query, &queryComparisons, &matches);
 
+
+
         // Output results
         int matchCount = getMatchCount(matches);
         if (exactfound) {
             //recordPrint(outputfile, tree->root->data, query);
+            printf("\tExact FOUND\n");
+
             fprintf(stdout, "%s --> %d records - comparisons: b%d n%d s%d\n", query, matchCount, queryComparisons.bit_cmps, queryComparisons.node_access, queryComparisons.str_cmps);
 
             // Print each matching record to the output file
@@ -122,6 +150,7 @@ void processQueries(ptc_tree_t *tree, FILE *inputfile, FILE *outputfile) {
 
             freeMatchList(matches);
         } else {
+            printf("\tExact NOT FOUND");
 
             // Get closest match if no exact match is found
             //closest = getCloseMatch(tree, query, &queryComparisons);
