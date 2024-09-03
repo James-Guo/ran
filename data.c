@@ -397,7 +397,8 @@ int treeSearch(ptc_tree_t *tree, char *query, comparisons_t *comparisons, match_
 
         // Compare the query with the current node's key
         int cmp = patriciaCompare(query, current->key, comparisons);
-        comparisons->bit_cmps += abs(cmp);
+        printf("\tCMP VALUE: %d", cmp);
+        comparisons->bit_cmps += cmp;
         comparisons->str_cmps++;
 
         // Debug output
@@ -416,10 +417,12 @@ int treeSearch(ptc_tree_t *tree, char *query, comparisons_t *comparisons, match_
             found = 1;
             break;
         } else if (cmp < 0) {
+            printf("\t GOING LEFT\n");
             // Move to the left child
             current = current->left;
         } else {
             // Move to the right child
+            printf("\t GOING RIGHT\n");
             current = current->right;
         }
     }
@@ -677,7 +680,7 @@ void treeIterate(ptc_tree_t *tree, char *query, comparisons_t *comparisons, clos
         comparisons->str_cmps++;
 
         // Debug output
-        printf("Comparing '%s' with '%s': distance=%d\n", query, current->key, distance);
+        printf("\tComparing '%s' with '%s': distance=%d\n", query, current->key, distance);
 
         if (distance < closest->edit_distance) {
             closest->edit_distance = distance;

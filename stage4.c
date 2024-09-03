@@ -40,7 +40,6 @@ int main(int argc, char *argv[]) {
     printf("In Order Traversal\n");
     inorderTraversal(tree->root);
     printf("*************************************\n");
-    exit(0);
 
     // create and write output file
     FILE *outputfile = fopen(argv[3], "w");
@@ -150,7 +149,7 @@ void processQueries(ptc_tree_t *tree, FILE *inputfile, FILE *outputfile) {
 
             freeMatchList(matches);
         } else {
-            printf("\tExact NOT FOUND");
+            printf("\tExact NOT FOUND\n");
 
             // Get closest match if no exact match is found
             //closest = getCloseMatch(tree, query, &queryComparisons);
@@ -169,6 +168,7 @@ void processQueries(ptc_tree_t *tree, FILE *inputfile, FILE *outputfile) {
 
             if (closest.node != NULL) {
                 //fprintf(stdout, "%s --> Closest match: %s (edit distance: %d)\n", query, closest.key, closest.edit_distance);
+                printf("\tClosest key is %s (edit distance: %d)\n", closest.key, closest.edit_distance);
                 recordPrint(outputfile, closest.node->data, query);
                 fprintf(stdout, "%s --> 1 records - comparisons: b%d n%d s%d\n", query, queryComparisons.bit_cmps, queryComparisons.node_access, queryComparisons.str_cmps);
             } else {
